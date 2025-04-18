@@ -1,16 +1,61 @@
-# Brain-tissue-segmentation
-Classical  and deep learning approaches for segmenting of different tissue types in MRI scans of the Brain
+# 🧠 Brain Tissue Segmentation
 
-Segmentation of different tissues from MRI scans of the brain is an important step for further downstream applications such as disease prediction, classification or brain age estimation.
+Segmentation of different brain tissues from MRI scans is a crucial preprocessing step for tasks such as disease diagnosis, classification, and brain age estimation. This project implements and compares **classical unsupervised learning** and **deep supervised learning** methods to segment four tissue classes:
 
-The goal of the project is to implement classical and deep learning approaches for segmentation of different tissue types in MRI scans of the brain, i.e., background, cerebrospinal fluid (CSF), white matter (WM), and gray matter (GM). We provide data from a total of 652 healthy subjects, that is split into different development sets and a hold-out test set.
+- Background  
+- Cerebrospinal Fluid (CSF)  
+- White Matter (WM)  
+- Gray Matter (GM)  
 
-## 1 Unsupervised Segmentation
+I use a dataset of **652 healthy subjects**, split into training/validation and a hold-out test set.
 
-I chose the k-mean algorithm as our first unsupervised method. Selecting the appropriate number of clusters (K) at first. In our case, it is 4 for grey matter, white matter, CSF, and background. Then it calculates the distance between each date point and the closest centroid in the feature space. After this step, it will update the centroid. The algorithm iterates these steps until the result converges.
+---
 
-I chose the Gaussian Mixture as our second unsupervised method. The Gaussian Mixture Model assumes that the data is generated from a mixture of several Gaussian distributions, each characterized by its mean, covariance matrix, and weight. It computes the probability of 
-each data point belonging to each Gaussian based on the current model parameters. Then it updates the model parameters by maximizing the likelihood of the data given the responsibilities
+## 🧪 Methods
 
-## 2 Deep Supervised Segmentation
+### 1. 🧩 Unsupervised Classical Methods
+
+#### 📌 K-Means Clustering
+- Uses voxel intensity as a single feature.
+- Cluster number \( K=4 \), one for each tissue class.
+- Sensitive to initialization and intensity overlaps.
+- **Fast but spatially unaware**.
+
+#### 📌 Gaussian Mixture Model (GMM)
+- Assumes voxel intensities follow a mixture of 4 Gaussians.
+- Applies Expectation-Maximization (EM) to optimize soft class probabilities.
+- **Better boundary modeling** than K-Means.
+
+---
+
+### 2. 🧠 Deep Supervised Method
+
+#### 📌 3D U-Net
+- Fully convolutional neural network for 3D voxel-wise segmentation.
+- **Input**: normalized and resampled 3D MRI volumes.
+- **Loss**: combination of Dice Loss and Cross-Entropy Loss.
+- **Augmentations**: flipping, rotation, and scaling.
+- **Training**: monitored using validation Dice scores.
+
+---
+
+## 📊 Evaluation Results
+
+I evaluate all methods using **Dice coefficient**, **Precision**, and **Recall** across the three tissues (CSF, WM, GM):
+
+| Tissue | Metric   | K-Means | GMM     | U-Net   |
+|--------|----------|---------|---------|---------|
+| **CSF** | Dice     | 0.966   | 0.964   | **0.984** |
+|        | Precision| 0.985   | 0.979   | **0.986** |
+|        | Recall   | 0.939   | 0.944   | **0.983** |
+| **WM**  | Dice     | 0.810   | 0.838   | **0.930** |
+|        | Precision| 0.955   | 0.924   | **0.940** |
+|        | Recall   | 0.743   | 0.785   | **0.921** |
+| **GM**  | Dice     | 0.900   | 0.932   | **0.971** |
+|        | Precision| 0.949   | 0.946   | **0.966** |
+|        | Recall   | 0.873   | 0.916   | **0.975** |
+
+> The U-Net model **consistently outperforms** classical unsupervised approaches in all metrics and tissue types. It is especially effective at handling difficult regions like WM.
+
+
 
